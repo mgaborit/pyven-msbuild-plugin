@@ -1,7 +1,7 @@
 from pyven.exceptions.parser_exception import ParserException
 from pyven.plugins.plugin_api.parser import Parser
 
-from command_plugin.msbuild import MSBuild
+from msbuild_plugin.msbuild import MSBuild
 
 class MSBuildParser(Parser):
     COUNT = 0
