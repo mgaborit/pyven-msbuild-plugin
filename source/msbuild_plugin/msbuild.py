@@ -23,6 +23,7 @@ class MSBuild(Process):
                                     warning_patterns=['warning', 'Warning', 'avertissement', 'Avertissement'],\
                                     warning_exceptions=[])
     
+    @Process.error_checks
     def process(self, verbose=False, warning_as_error=False):
         Logger.get().info('Building : ' + self.type + ':' + self.name)
         self.duration, out, err, returncode = self._call_command(self._format_call())
@@ -54,7 +55,8 @@ class MSBuild(Process):
             self.status = pyven.constants.STATUS[0]
         return returncode == 0 and (not warning_as_error or len(self.warnings) == 0)
     
-    def clean(self, verbose=False):
+    @Process.error_checks
+    def clean(self, verbose=False, warning_as_error=False):
         Logger.get().info('Cleaning : ' + self.type + ':' + self.name)
         if os.path.isfile(os.path.join(self.cwd, self.project)):
             self.duration, out, err, returncode = self._call_command(self._format_call(clean=True))
@@ -69,6 +71,7 @@ class MSBuild(Process):
                 Logger.get().error('Clean failed : ' + self.type + ':' + self.name)
             return returncode == 0
         Logger.get().info('No project to be cleaned : ' + self.project)
+        self.status = pyven.constants.STATUS[0]
         return True
         
     def report_summary(self):
