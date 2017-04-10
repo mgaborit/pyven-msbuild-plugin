@@ -11,7 +11,7 @@ class MSBuildParser(Parser):
         MSBuildParser.COUNT += 1
         super(MSBuildParser, self).__init__(cwd)
     
-    def parse(self, node):
+    def parse(self, node, project):
         objects = []
         members = self.parse_process(node)
         errors = []
