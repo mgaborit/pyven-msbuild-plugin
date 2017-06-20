@@ -18,10 +18,14 @@ class MSBuildParser(Parser):
         config_node = node.find('configuration')
         if config_node is None:
             errors.append('Missing MSBuild configuration')
+        elif config_node.text is None:
+            errors.append('Missing MSBuild configuration')
         else:
             configuration = config_node.text
         archi_node = node.find('architecture')
         if archi_node is None:
+            errors.append('Missing MSBuild platform')
+        elif archi_node.text is None:
             errors.append('Missing MSBuild platform')
         else:
             architecture = archi_node.text
