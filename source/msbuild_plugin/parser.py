@@ -29,6 +29,10 @@ class MSBuildParser(Parser):
             errors.append('Missing MSBuild platform')
         else:
             architecture = archi_node.text
+        dot_net_version = None
+        dot_net_node = node.find('dot_net')
+        if dot_net_node is not None and dot_net_node.text is not None:
+            dot_net_version = dot_net_node.text
         project_nodes = node.xpath('projects/project')
         projects = []
         if len(project_nodes) == 0:
@@ -45,7 +49,7 @@ class MSBuildParser(Parser):
             raise e
         
         for project in projects:
-            objects.append(MSBuild(self.cwd, members[0], configuration, architecture, project, options))
+            objects.append(MSBuild(self.cwd, members[0], configuration, architecture, project, options, dot_net_version))
         return objects
         
 def get(cwd):

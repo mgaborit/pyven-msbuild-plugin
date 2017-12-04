@@ -10,7 +10,7 @@ from pyven.exceptions.exception import PyvenException
 
 class MSBuild(Process):
 
-    def __init__(self, cwd, name, configuration, architecture, project, options):
+    def __init__(self, cwd, name, configuration, architecture, project, options, dot_net_version):
         super(MSBuild, self).__init__(cwd, name)
         self.duration = 0
         self.type = 'msbuild'
@@ -18,6 +18,7 @@ class MSBuild(Process):
         self.architecture = architecture
         self.project = project
         self.options = options
+        self.dot_net_version = dot_net_version
         self.parser = LineLogsParser(error_patterns=['error', 'Error', 'erreur', 'Erreur'],\
                                     error_exceptions=['Erreur interne'],\
                                     warning_patterns=['warning', 'Warning', 'avertissement', 'Avertissement'],\
@@ -110,7 +111,14 @@ class MSBuild(Process):
         return round(toc - tic, 3), out, err, returncode
         
     def _format_call(self, clean=False):
-        call = ['msbuild.exe', self.project]
+        exe = 'msbuild.exe'
+        if self.dot_net_version is not None:
+            Logger.get().info('Using .NET ' + self.dot_net_version)
+            exe = os.path.join(os.environ.get('WINDIR'), 'Microsoft.NET', 'Framework', self.dot_net_version, exe)
+        elif self.project.endswith('.dproj'):
+            Logger.get().info('Using .NET v3.5')
+            exe = os.path.join(os.environ.get('WINDIR'), 'Microsoft.NET', 'Framework', 'v3.5', exe)
+        call = [exe, self.project]
         call.append('/consoleLoggerParameters:NoSummary;ErrorsOnly;WarningsOnly')
         if self.project.endswith('.sln'):
             call.append('/property:Configuration='+self.configuration)
